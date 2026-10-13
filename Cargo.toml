@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "crates/bobine-core",
+    "crates/bobine-daemon",
+    "apps/desktop/src-tauri",
+]
+resolver = "2"
