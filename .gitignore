@@ -1,0 +1,7 @@
+.worktrees/
+.DS_Store
+.opencode/
+target/
+node_modules/
+apps/desktop/dist/
+.superpowers/
