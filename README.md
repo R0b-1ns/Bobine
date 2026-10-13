@@ -18,20 +18,15 @@ Not done yet: automatic volume mapping, clone/backup with hash verification, and
 
 - macOS
 - Rust (stable)
-- Node.js (for the desktop UI, once it exists)
+- Node.js
+
+If `cargo` fails with an Xcode license error, point the build at the Command Line Tools: `export DEVELOPER_DIR=/Library/Developer/CommandLineTools`.
 
 ## Build and test
 
 ```bash
 cargo test --workspace
-```
-
-After the desktop app exists:
-
-```bash
 cd apps/desktop
 npm test
 npm run tauri dev
 ```
-
-Those `apps/desktop` commands are not available until the Tauri shell is in the tree.
