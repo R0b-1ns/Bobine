@@ -157,6 +157,62 @@ fn clip_with_two_locations_lists_once_with_mixed_connectivity() {
 }
 
 #[test]
+fn same_filename_two_clips_each_list_once() {
+    let (_dir, catalog) = open();
+    catalog.insert_project(&martin()).unwrap();
+    catalog.upsert_volume(&backup_hdd(false)).unwrap();
+    catalog.upsert_volume(&ssd2()).unwrap();
+    catalog.insert_clip(&video("c1", "A001_C001.mov")).unwrap();
+    catalog.insert_clip(&video("c2", "A001_C001.mov")).unwrap();
+    catalog
+        .insert_location(&NewLocation {
+            id: "loc-c1-hdd".into(),
+            clip_id: "c1".into(),
+            volume_id: "v-hdd".into(),
+            path: "A001_C001.mov".into(),
+        })
+        .unwrap();
+    catalog
+        .insert_location(&NewLocation {
+            id: "loc-c1-ssd".into(),
+            clip_id: "c1".into(),
+            volume_id: "v-ssd".into(),
+            path: "clone/A001_C001.a1b2.mov".into(),
+        })
+        .unwrap();
+    catalog
+        .insert_location(&NewLocation {
+            id: "loc-c2-ssd".into(),
+            clip_id: "c2".into(),
+            volume_id: "v-ssd".into(),
+            path: "A001_C001.mov".into(),
+        })
+        .unwrap();
+
+    let clips: Vec<_> = catalog
+        .list_clips()
+        .unwrap()
+        .into_iter()
+        .filter(|clip| clip.original_filename == "A001_C001.mov")
+        .collect();
+    assert_eq!(clips.len(), 2);
+    let c1 = clips.iter().find(|clip| clip.id == "c1").unwrap();
+    assert_eq!(c1.locations.len(), 2);
+    assert!(c1.locations.iter().any(|location| !location.connected));
+    assert!(c1.locations.iter().any(|location| location.connected));
+    let c2 = clips.iter().find(|clip| clip.id == "c2").unwrap();
+    assert_eq!(c2.locations.len(), 1);
+    assert!(c2.locations[0].connected);
+}
+
+#[test]
+fn insert_clip_rejects_unknown_project() {
+    let (_dir, catalog) = open();
+    let result = catalog.insert_clip(&video("c-orphan", "A001_C001.mov"));
+    assert!(result.is_err());
+}
+
+#[test]
 fn photo_kind_lists() {
     let (_dir, catalog) = open();
     catalog.insert_project(&martin()).unwrap();

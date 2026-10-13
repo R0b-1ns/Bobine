@@ -142,23 +142,29 @@ impl Catalog {
             ))
         })?;
 
-        let mut clips: Vec<ClipSummary> = Vec::new();
+        let mut order: Vec<String> = Vec::new();
+        let mut by_id = std::collections::HashMap::<String, ClipSummary>::new();
         for row in rows {
             let (summary, location) = row?;
-            if let Some(last) = clips.last_mut() {
-                if last.id == summary.id {
+            match by_id.entry(summary.id.clone()) {
+                std::collections::hash_map::Entry::Vacant(slot) => {
+                    order.push(summary.id.clone());
+                    let mut summary = summary;
                     if let Some(location) = location {
-                        last.locations.push(location);
+                        summary.locations.push(location);
                     }
-                    continue;
+                    slot.insert(summary);
+                }
+                std::collections::hash_map::Entry::Occupied(mut slot) => {
+                    if let Some(location) = location {
+                        slot.get_mut().locations.push(location);
+                    }
                 }
             }
-            let mut summary = summary;
-            if let Some(location) = location {
-                summary.locations.push(location);
-            }
-            clips.push(summary);
         }
-        Ok(clips)
+        Ok(order
+            .into_iter()
+            .filter_map(|id| by_id.remove(&id))
+            .collect())
     }
 }

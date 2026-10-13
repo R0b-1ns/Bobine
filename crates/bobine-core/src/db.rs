@@ -16,6 +16,7 @@ impl Catalog {
             }
         }
         let conn = Connection::open(path)?;
+        conn.execute_batch("PRAGMA foreign_keys = ON;")?;
         conn.execute_batch(include_str!("schema.sql"))?;
         Ok(Self {
             conn: std::sync::Mutex::new(conn),

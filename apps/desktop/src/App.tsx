@@ -3,15 +3,38 @@ import { useEffect, useState } from "react";
 import { ClipList } from "./library/ClipList";
 import type { ClipSummary, Volume } from "./library/types";
 
-export function App() {
+type AppProps = {
+  loadClips?: () => Promise<ClipSummary[]>;
+};
+
+function defaultLoadClips(): Promise<ClipSummary[]> {
+  return invoke<ClipSummary[]>("list_clips");
+}
+
+export function App({ loadClips = defaultLoadClips }: AppProps) {
   const [clips, setClips] = useState<ClipSummary[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    invoke<ClipSummary[]>("list_clips")
-      .then(setClips)
-      .catch(() => setClips([]));
+    let cancelled = false;
+    loadClips()
+      .then((next) => {
+        if (cancelled) {
+          return;
+        }
+        setError(null);
+        setClips(next);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setError("Could not load the library");
+        }
+      });
     invoke<Volume[]>("list_volumes").catch(() => undefined);
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [loadClips]);
 
   return (
     <div>
@@ -22,7 +45,7 @@ export function App() {
       </aside>
       <main>
         <input aria-label="Search" placeholder="Search" />
-        <ClipList clips={clips} />
+        {error ? <p role="alert">{error}</p> : <ClipList clips={clips} />}
       </main>
     </div>
   );
