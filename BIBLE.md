@@ -4,10 +4,11 @@ Bobine is a local library for a solo videographer. It maps rushes and photos by 
 
 ## Source of truth
 
+- Roadmap: `ROADMAP.md` — what is done, what to work on now, what to leave alone.
 - Spec: `docs/superpowers/specs/2026-10-13-bobine-mvp-design.md`
-- Current slice: `docs/superpowers/plans/2026-10-13-bobine-foundations.md`
+- Foundations plan (shipped): `docs/superpowers/plans/2026-10-13-bobine-foundations.md`
 
-Do not implement mapping, clone, AI, or NLE plugins unless a plan says so.
+Implement only the slice under **Doing** in `ROADMAP.md`. Do not start a To do or Plan to do item unless that file says it is current.
 
 ## Architecture
 
@@ -29,4 +30,4 @@ A clip is identified by content hash. Locations are that clip on a volume at a p
 
 ## How to work
 
-Read this bible, then the spec, then the active plan. UI depends on `bobine-daemon` only.
+Read this bible, then `ROADMAP.md`, then the spec, then the active plan. When a slice starts or merges, update `ROADMAP.md` in the same change. UI depends on `bobine-daemon` only.
