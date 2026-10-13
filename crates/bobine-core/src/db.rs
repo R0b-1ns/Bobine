@@ -2,10 +2,9 @@ use std::path::Path;
 
 use rusqlite::Connection;
 
-use crate::error::Result;
+use crate::error::{Error, Result};
 
 pub struct Catalog {
-    #[allow(dead_code)]
     conn: std::sync::Mutex<Connection>,
 }
 
@@ -20,6 +19,15 @@ impl Catalog {
         conn.execute_batch(include_str!("schema.sql"))?;
         Ok(Self {
             conn: std::sync::Mutex::new(conn),
+        })
+    }
+
+    pub(crate) fn connection(&self) -> Result<std::sync::MutexGuard<'_, Connection>> {
+        self.conn.lock().map_err(|_| {
+            Error::Io(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "catalog lock poisoned",
+            ))
         })
     }
 }
