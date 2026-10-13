@@ -4,9 +4,9 @@ Bobine is a macOS app for solo videographers. It keeps a library of your rushes 
 
 ## Status
 
-Foundations are in progress: SQLite catalog, a local daemon API, and a Tauri shell that can list registered media even when a disk is offline.
+Foundations are in: SQLite catalog, a local daemon API, and a Tauri shell that can list registered media even when a disk is offline.
 
-Not done yet: automatic volume mapping, clone/backup with hash verification, and the thumbnail browse UI.
+What is done, what to build next, and what waits for a later version is in `ROADMAP.md`. Next slice is mapping: notice a card or disk and register its videos and photos.
 
 ## Layout
 
